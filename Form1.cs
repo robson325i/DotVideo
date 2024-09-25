@@ -15,8 +15,14 @@ namespace DotVideo
 
         private void FinalFrame_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
-            pictureBox1.Image = (Bitmap)eventArgs.Frame.Clone();
-            pictureBox1.Refresh();
+            // Copia a imagem do buffer da camera
+            using var image = (Bitmap)eventArgs.Frame.Clone();
+            image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+            Invoke(() =>
+            {
+                pictureBox1.BackgroundImage = image;
+                pictureBox1.Refresh();
+            });
         }
 
         private void UpdateVideoDevices()
