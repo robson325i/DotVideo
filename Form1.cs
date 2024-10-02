@@ -5,12 +5,13 @@ namespace DotVideo
 {
     public partial class Form1 : Form
     {
-        private FilterInfoCollection Fic;
+        private FilterInfoCollection _fic;
+        private VideoCaptureDevice? _vcd;
 
         public Form1()
         {
             InitializeComponent();
-            Fic = new(FilterCategory.VideoInputDevice);
+            _fic = new(FilterCategory.VideoInputDevice);
         }
 
         private void FinalFrame_NewFrame(object sender, NewFrameEventArgs eventArgs)
@@ -27,11 +28,11 @@ namespace DotVideo
 
         private void UpdateVideoDevices()
         {
-            Fic = new(FilterCategory.VideoInputDevice);
+            _fic = new(FilterCategory.VideoInputDevice);
 
             comboBox1.Items.Clear();
 
-            foreach (FilterInfo dev in Fic)
+            foreach (FilterInfo dev in _fic)
             {
                 comboBox1.Items.Add(dev.Name);
             }
@@ -44,10 +45,23 @@ namespace DotVideo
 
         private void button1_Click(object sender, EventArgs e)
         {
-            VideoCaptureDevice vcd;
-            vcd = new(Fic[comboBox1.SelectedIndex].MonikerString);
-            vcd.NewFrame += FinalFrame_NewFrame;
-            vcd.Start();
+            if (comboBox1.SelectedIndex < 0)
+            {
+                return;
+            }
+            _vcd = new(_fic[comboBox1.SelectedIndex].MonikerString);
+            _vcd.NewFrame += FinalFrame_NewFrame;
+            _vcd.Start();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_vcd != null)
+            {
+                _vcd.SignalToStop();
+                _vcd.NewFrame -= FinalFrame_NewFrame;
+                _vcd = null;
+            }
         }
     }
 }
