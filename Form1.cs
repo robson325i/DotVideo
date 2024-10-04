@@ -5,12 +5,12 @@ namespace DotVideo
 {
     public partial class Form1 : Form
     {
-        private FilterInfoCollection Fic;
-
+        private FilterInfoCollection _fic;
+        VideoCaptureDevice _vcd;
         public Form1()
         {
             InitializeComponent();
-            Fic = new(FilterCategory.VideoInputDevice);
+            _fic = new(FilterCategory.VideoInputDevice);
         }
 
         private void FinalFrame_NewFrame(object sender, NewFrameEventArgs eventArgs)
@@ -20,18 +20,20 @@ namespace DotVideo
             image.RotateFlip(RotateFlipType.Rotate90FlipNone);
             Invoke(() =>
             {
-                pictureBox1.BackgroundImage = image;
+                pictureBox1.SuspendLayout();
+                pictureBox1.Image = image;
                 pictureBox1.Refresh();
+                pictureBox1.ResumeLayout();
             });
         }
 
         private void UpdateVideoDevices()
         {
-            Fic = new(FilterCategory.VideoInputDevice);
+            _fic = new(FilterCategory.VideoInputDevice);
 
             comboBox1.Items.Clear();
 
-            foreach (FilterInfo dev in Fic)
+            foreach (FilterInfo dev in _fic)
             {
                 comboBox1.Items.Add(dev.Name);
             }
@@ -44,10 +46,32 @@ namespace DotVideo
 
         private void button1_Click(object sender, EventArgs e)
         {
-            VideoCaptureDevice vcd;
-            vcd = new(Fic[comboBox1.SelectedIndex].MonikerString);
-            vcd.NewFrame += FinalFrame_NewFrame;
-            vcd.Start();
+            if (comboBox1.SelectedIndex < 0)
+            {
+                return;
+            }
+            _vcd = new(_fic[comboBox1.SelectedIndex].MonikerString);
+            var capabilities = _vcd.VideoCapabilities[1];
+            _vcd.VideoResolution = capabilities;
+            _vcd.NewFrame += FinalFrame_NewFrame;
+            _vcd.Start();
+        }
+
+        private void pictureBox1_Resize(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (_vcd != null)
+            {
+                _vcd.NewFrame -= FinalFrame_NewFrame;
+                _vcd.SignalToStop();
+                _vcd.WaitForStop();
+                _vcd = null;
+            }
+            
         }
     }
 }
