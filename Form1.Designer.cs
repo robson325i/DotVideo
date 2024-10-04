@@ -30,10 +30,9 @@
         {
             label1 = new Label();
             comboBox1 = new ComboBox();
-            pictureBox1 = new PictureBox();
             button1 = new Button();
             button2 = new Button();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            panel1 = new Panel();
             SuspendLayout();
             // 
             // label1
@@ -54,17 +53,6 @@
             comboBox1.Size = new Size(121, 23);
             comboBox1.TabIndex = 1;
             // 
-            // pictureBox1
-            // 
-            pictureBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            pictureBox1.BackgroundImageLayout = ImageLayout.Zoom;
-            pictureBox1.Location = new Point(12, 56);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(700, 450);
-            pictureBox1.TabIndex = 2;
-            pictureBox1.TabStop = false;
-            pictureBox1.Resize += pictureBox1_Resize;
-            // 
             // button1
             // 
             button1.Location = new Point(139, 27);
@@ -81,18 +69,27 @@
             button2.Name = "button2";
             button2.Size = new Size(75, 23);
             button2.TabIndex = 4;
-            button2.Text = "stop";
+            button2.Text = "Parar";
             button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
+            // 
+            // panel1
+            // 
+            panel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            panel1.Location = new Point(12, 56);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(700, 478);
+            panel1.TabIndex = 5;
+            panel1.Paint += panel1_Paint;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(724, 546);
+            Controls.Add(panel1);
             Controls.Add(button2);
             Controls.Add(button1);
-            Controls.Add(pictureBox1);
             Controls.Add(comboBox1);
             Controls.Add(label1);
             MinimumSize = new Size(740, 585);
@@ -100,7 +97,6 @@
             Text = "Form1";
             FormClosing += Form1_FormClosing;
             Load += Form1_Load;
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -109,8 +105,8 @@
 
         private Label label1;
         private ComboBox comboBox1;
-        private PictureBox pictureBox1;
         private Button button1;
         private Button button2;
+        private Panel panel1;
     }
 }

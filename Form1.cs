@@ -7,7 +7,7 @@ namespace DotVideo
     {
         private FilterInfoCollection _fic;
         private VideoCaptureDevice? _vcd;
-
+        private Bitmap _bitmap;
         public Form1()
         {
             InitializeComponent();
@@ -19,19 +19,13 @@ namespace DotVideo
             // Copia a imagem do buffer da camera
             using var image = (Bitmap)eventArgs.Frame.Clone();
             image.RotateFlip(RotateFlipType.Rotate90FlipNone);
-            Invoke(() =>
-            {
-                pictureBox1.SuspendLayout();
-                pictureBox1.Image = image;
-                pictureBox1.Refresh();
-                pictureBox1.ResumeLayout();
-            });
+            _bitmap = image;
+            Invoke(() => panel1.Refresh);
         }
 
         private void UpdateVideoDevices()
         {
             _fic = new(FilterCategory.VideoInputDevice);
-
             comboBox1.Items.Clear();
 
             foreach (FilterInfo dev in _fic)
@@ -71,12 +65,6 @@ namespace DotVideo
                 return;
             }
         }
-
-        private void pictureBox1_Resize(object sender, EventArgs e)
-        {
-            
-        }
-
         private void button2_Click(object sender, EventArgs e)
         {
             if (_vcd != null)
@@ -86,7 +74,15 @@ namespace DotVideo
                 _vcd.WaitForStop();
                 _vcd = null;
             }
-            
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+            if (_bitmap != null)
+            {
+                e.Graphics.Clear(Color.White);
+                e.Graphics.DrawImageUnscaled(_bitmap, new Point(0, 0));
+            }
         }
     }
 }
