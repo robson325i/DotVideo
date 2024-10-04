@@ -52,6 +52,8 @@ namespace DotVideo
                 return;
             }
             _vcd = new(_fic[comboBox1.SelectedIndex].MonikerString);
+            var capabilities = _vcd.VideoCapabilities[1];
+            _vcd.VideoResolution = capabilities;
             _vcd.NewFrame += FinalFrame_NewFrame;
             _vcd.Start();
         }
@@ -68,11 +70,6 @@ namespace DotVideo
             {
                 return;
             }
-            _vcd = new(_fic[comboBox1.SelectedIndex].MonikerString);
-            var capabilities = _vcd.VideoCapabilities[1];
-            _vcd.VideoResolution = capabilities;
-            _vcd.NewFrame += FinalFrame_NewFrame;
-            _vcd.Start();
         }
 
         private void pictureBox1_Resize(object sender, EventArgs e)
