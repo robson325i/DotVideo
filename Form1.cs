@@ -6,7 +6,8 @@ namespace DotVideo
     public partial class Form1 : Form
     {
         private FilterInfoCollection _fic;
-        VideoCaptureDevice _vcd;
+        private VideoCaptureDevice? _vcd;
+
         public Form1()
         {
             InitializeComponent();
@@ -46,6 +47,23 @@ namespace DotVideo
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (comboBox1.SelectedIndex < 0)
+            {
+                return;
+            }
+            _vcd = new(_fic[comboBox1.SelectedIndex].MonikerString);
+            _vcd.NewFrame += FinalFrame_NewFrame;
+            _vcd.Start();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (_vcd != null)
+            {
+                _vcd.SignalToStop();
+                _vcd.NewFrame -= FinalFrame_NewFrame;
+                _vcd = null;
+            }
             if (comboBox1.SelectedIndex < 0)
             {
                 return;
