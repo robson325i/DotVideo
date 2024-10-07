@@ -7,7 +7,6 @@ namespace DotVideo
     {
         private FilterInfoCollection _fic;
         private VideoCaptureDevice? _vcd;
-        private Bitmap _bitmap;
         public Form1()
         {
             InitializeComponent();
@@ -17,10 +16,10 @@ namespace DotVideo
         private void FinalFrame_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
             // Copia a imagem do buffer da camera
-            using var image = (Bitmap)eventArgs.Frame.Clone();
-            image.RotateFlip(RotateFlipType.Rotate90FlipNone);
-            _bitmap = image;
-            Invoke(() => panel1.Refresh);
+            using Bitmap bitmap = (Bitmap)eventArgs.Frame.Clone();
+            bitmap.RotateFlip(RotateFlipType.Rotate90FlipNone);
+            using Graphics g = panel1.CreateGraphics();
+            g.DrawImage(bitmap, 0, 0);
         }
 
         private void UpdateVideoDevices()
@@ -37,6 +36,11 @@ namespace DotVideo
         private void Form1_Load(object sender, EventArgs e)
         {
             UpdateVideoDevices();
+            SetStyle(ControlStyles.DoubleBuffer |
+                ControlStyles.UserPaint |
+                ControlStyles.AllPaintingInWmPaint,
+                true);
+            UpdateStyles();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -73,15 +77,6 @@ namespace DotVideo
                 _vcd.SignalToStop();
                 _vcd.WaitForStop();
                 _vcd = null;
-            }
-        }
-
-        private void panel1_Paint(object sender, PaintEventArgs e)
-        {
-            if (_bitmap != null)
-            {
-                e.Graphics.Clear(Color.White);
-                e.Graphics.DrawImageUnscaled(_bitmap, new Point(0, 0));
             }
         }
     }
